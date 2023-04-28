@@ -3,6 +3,51 @@ const Produto = require("../database/produto");
 
 const router = Router();
 
+router.post("/produtos", async (req, res) => {
+  const { nome, preco, descricao, desconto, dataDesconto, categoria } = req.body;
+
+  if (
+      !nome ||
+      !preco ||
+      !descricao ||
+      !desconto ||
+      !dataDesconto ||
+      !categoria
+  ) {
+      return res.status(400).json({ message: "Campo obrigatório não informado" });
+  }
+  if (
+      categoria !== "Brinquedos" &&
+      categoria !== "Conforto" &&
+      categoria !== "Higiene"
+  ) {
+      return res.status(400).json({ message: "Categoria invalida" });
+  }
+  const dataAtual = new Date();
+  const dataComparar = new Date(Date.parse(dataDesconto));
+
+  if (dataComparar < dataAtual) {
+      return res.status(400).json({ message: "Data expirada" });
+  }
+  if (desconto < 0 || desconto > 100) {
+      return res.status(400).json({ message: "Desconto inválido" });
+  }
+  try {
+      const produto = await Produto.create({
+          nome, 
+          preco, 
+          descricao, 
+          desconto, 
+          dataDesconto, 
+          categoria
+      });
+      res.status(201).json(produto);
+  } catch (err) {
+      console.log(err);
+      res.status(500).json({ message: "Um erro aconteceu." });
+  }
+});
+
 router.delete("/produtos/all", async (req, res) => {
     try {
       await Produto.destroy({ where: {} });
