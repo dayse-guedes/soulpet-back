@@ -3,18 +3,36 @@ const cors = require("cors");
 require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
+const LogMorgan = require("./model/LogMorgan");
+const mongoose = require('mongoose');
 
 // Configuração do App
 const app = express();
 app.use(express.json()); // Possibilitar transitar dados usando JSON
-app.use(morgan("dev"));
+
 
 // Configurações de acesso
 app.use(cors({ origin: "http://localhost:3000" }));
 
-// Configuração do Banco de Dados
+// Configuração do Banco de Dados MySQL
 const { connection, authenticate } = require("./database/database");
 authenticate(connection); // efetivar a conexão
+
+// Configuração de conexão com o MongoDB
+mongoose.connect(process.env.db_url);
+app.use(morgan('combined', { 
+  stream: {
+    write: async function (log) {
+      try {
+        const novoLog = new LogMorgan({ log });
+        await novoLog.save();
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  }
+}));
+
 
 // Definição de Rotas
 const rotasClientes = require("./routes/clientes");
@@ -31,3 +49,4 @@ app.listen(3001, () => {
   connection.sync();
   console.log("Servidor rodando em http://localhost:3001/");
 });
+
