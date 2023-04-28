@@ -34,7 +34,7 @@ router.get("/clientes/:clienteId/pets", async (req, res) => {
     where: { clienteId: req.params.clienteId },
   });
 
-  if (clienteId) {f
+  if (clienteId) {
     res.json(clienteId);
   } else {
     res.status(404).json({ message: "Usuário não encontrado." });
