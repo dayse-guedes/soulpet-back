@@ -34,12 +34,25 @@ router.get("/clientes/:clienteId/pets", async (req, res) => {
     where: { clienteId: req.params.clienteId },
   });
 
-  if (clienteId) {
+  if (clienteId) {f
     res.json(clienteId);
   } else {
     res.status(404).json({ message: "Usuário não encontrado." });
   }
 });
+
+router.get("/clientes/:clienteId/endereco", async (req, res) => {
+  const endereco = await Endereco.findOne({
+    where: { clienteId: req.params.clienteId },
+  });
+
+  if (endereco) {
+    res.json(endereco);
+  } else {
+    res.status(404).json({ message: "Endereço não encontrado." });
+  }
+});
+
 
 router.post("/clientes", async (req, res) => {
   // Coletar os dados do req.body
