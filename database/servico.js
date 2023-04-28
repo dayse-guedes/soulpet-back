@@ -6,7 +6,7 @@ const Servico = connection.define("servico", {
     type: DataTypes.STRING(130),
     allowNull: false, 
   },
-  preço: {
+  preco: {
     type: DataTypes.FLOAT,
     allowNull: false,
 
