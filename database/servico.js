@@ -1,6 +1,5 @@
 const { DataTypes } = require("sequelize");
 const { connection } = require("./database");
-const Agendamento = require("./models/agendamento");
 
 const Servico = connection.define("servico", {
   nome: {
@@ -13,9 +12,4 @@ const Servico = connection.define("servico", {
 
   },
 });
-
-Servico.belongsToMany(Agendamento, { through: 'ServicoAgendamento' });
-Agendamento.belongsToMany(Servico, { through: 'ServicoAgendamento' });
-
-
 module.exports = Servico;

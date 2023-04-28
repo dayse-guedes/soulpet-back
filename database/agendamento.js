@@ -1,9 +1,23 @@
 const { DataTypes } = require("sequelize");
 const { connection } = require("./database");
-const { Servico } = require("./models/servico");
-const { Cliente } = require ("./models/cliente");
+const { Servico } = require("./servico");
+const { Pet } = require ("./pet");
 
 const Agendamento = connection.define("agendamento", {
+  ServicoId: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: Servico, 
+      key: "id",
+    }
+  },
+  PetId: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: Pet, 
+      key: "id",
+    }
+  },
   dataAgendada: {
     type: DataTypes.DATE,
     allowNull: false,
@@ -14,9 +28,8 @@ const Agendamento = connection.define("agendamento", {
   },
 });
 
-Agendamento.belongsToMany(Servico, { through: "ServicoAgendamento" });
-Agendamento.belongsToMany(Cliente, { through: "ClienteAgendamento" });
-Servico.belongsToMany(Agendamento, { through: "ServicoAgendamento" });
-Cliente.belongsToMany(Agendamento, { through: "ClienteAgendamento" });
+Servico.belongsToMany(Pet, { through: "Agendamento" });
+Pet.belongsToMany(Servico, { through: "Agendamento" });
+
 
 module.exports = Agendamento;
