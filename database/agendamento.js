@@ -14,10 +14,11 @@ const Agendamento = connection.define("agendamento", {
   },
 });
 
-Servico.hasMany(Agendamento);
-Agendamento.belongsTo(Servico);
-Pet.hasMany(Agendamento);
-Agendamento.belongsTo(Pet);
+Pet.hasMany(Agendamento, { foreignKey: 'petId', as: 'agendamentos' });
+Agendamento.belongsTo(Pet, { foreignKey: 'petId', as: 'pet' });
+
+Servico.hasMany(Agendamento, { foreignKey: 'servicoId', as: 'agendamentos' });
+Agendamento.belongsTo(Servico, { foreignKey: 'servicoId', as: 'servico' });
 
 
 
