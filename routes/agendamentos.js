@@ -6,6 +6,15 @@ const Servico = require("../database/servico");
 const { Router } = require("express");
 const router = Router();
 
+router.get("/agendamentos", async (req, res) => {
+  try{
+    const agendamentos = await Agendamento.findAll();
+    res.status(200).json(agendamentos);
+  } catch(err){
+    res.status(500).json({message: "Um erro aconteceu."})
+  }
+});
+
 router.post("/agendamentos", async (req, res) => {
   try {
     const { petId, servicoId, dataAgendada, realizada } = req.body;
