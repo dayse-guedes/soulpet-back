@@ -6,12 +6,18 @@ const Servico = require("../database/servico");
 const { Router } = require("express");
 const router = Router();
 
-router.get("/agendamentos", async (req, res) => {
-  try{
-    const agendamentos = await Agendamento.findAll();
+router.get('/agendamentos', async (req, res) => {
+  try {
+    const agendamentos = await Agendamento.findAll({
+      include: [
+        { model: Pet, as: 'pet', attributes: ['nome'] },
+        { model: Servico, as: 'servico', attributes: ['nome'] },
+      ],
+    });
     res.status(200).json(agendamentos);
-  } catch(err){
-    res.status(500).json({message: "Um erro aconteceu."})
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Erro ao consultar agendamentos' });
   }
 });
 
