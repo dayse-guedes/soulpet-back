@@ -1,6 +1,10 @@
 const Cliente = require("../database/cliente");
 const Endereco = require("../database/endereco");
 const Pet = require("../database/pet");
+const path = require('path')
+const ejs = require('ejs')
+
+
 
 const { Router } = require("express");
 
@@ -9,10 +13,26 @@ const router = Router();
 
 // Definição de rotas
 router.get("/clientes", async (req, res) => {
-  // SELECT * FROM clientes;
+  // SELECT * FROM clientes
   const listaClientes = await Cliente.findAll();
   res.json(listaClientes);
 });
+router.get('/pdf', async (re, res) => {
+  const listaClientes = await Cliente.findAll({
+    include: [Pet]
+  })
+
+  const filePath = path.join(__dirname, "print.ejs")
+  ejs.renderFile(filePath, { listaClientes }, (err, html) => {
+    if (err) {
+      return res.send('Erro na leitura do arquivo')
+    }
+
+    // enviar para o navegador
+    return res.send(html)
+  })
+
+})
 
 // /clientes/1, 2
 router.get("/clientes/:id", async (req, res) => {
