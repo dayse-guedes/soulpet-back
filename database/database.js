@@ -12,6 +12,7 @@ const connection = new Sequelize(
     // informações adicionais da conexão
     host: process.env.DB_HOST, // endereço (banco local)
     dialect: "mysql", // o banco utilizado
+    timezone: "-03:00"
   }
 );
 
