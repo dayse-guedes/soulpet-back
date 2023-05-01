@@ -37,16 +37,35 @@ router.post("/servicos", async (req, res) => {
         console.log(err);
         res.status(500).json({ message: "Um erro aconteceu." });
     }
-
 });
 
 router.delete("/servicos/all", async (req, res) => {
     try {
-        await Servico.destroy({ where:{}});
+        await Servico.destroy({ where: {} });
         res.status(200).json({ message: "Todos os servicos foram removidos." });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Ocorreu um erro." });
+    }
+});
+
+router.put("/servicos/:id", async (req, res) => {
+    const { nome, preco } = req.body;
+    const servico = await Servico.findByPk(req.params.id);
+
+    try {
+        if (servico) {
+            await Servico.update(
+                { nome, preco },
+                { where: { id: req.params.id } }
+            );
+            res.json({ message: "O serviço foi editado." });
+        } else {
+            res.status(404).json({ message: "O serviço não foi encontrado." });
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: "Um erro aconteceu." });
     }
 });
 
