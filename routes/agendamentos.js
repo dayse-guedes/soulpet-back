@@ -23,7 +23,7 @@ router.get('/agendamentos', async (req, res) => {
 
 router.post("/agendamentos", async (req, res) => {
   try {
-    const { petId, servicoId, dataAgendada, realizada } = req.body;
+    const { petId, servicoId, dataAgendada} = req.body;
 
     const pet = await Pet.findByPk(petId);
     const servico = await Servico.findByPk(servicoId);
@@ -36,7 +36,6 @@ router.post("/agendamentos", async (req, res) => {
       petId,
       servicoId,
       dataAgendada,
-      realizada,
     });
 
     res.status(201).json(agendamento);
