@@ -7,76 +7,51 @@ const { Router } = require("express");
 const router = Router();
 
 router.get("/pets", async (req, res) => {
-   // Receber o número da página, quando não é enviado o número da página é atribuido página 1
-   const { page = 1 } = req.query;
-   //console.log(page);
+  const { page = 1 } = req.query;
 
-   // Limite de registros em cada página
-   const limit = 5;
+  const limit = 5;
 
-   // Variável com o número da última página
-   var lastPage = 1;
+  let lastPage = 1;
 
-   // Contar a quantidade de registro no banco de dados
-   const countPets = await Pet.count();
-   //console.log(countPets);
+  const countPets = await Pet.count();
 
-   // Acessa o IF quando encontrar registro no banco de dados
-   if (countPets !== 0) {
-       // Calcular a última página
-       lastPage = Math.ceil(countPets / limit);
-       //console.log(lastPage);
-   } else {
-       // Pausar o processamento e retornar a mensagem de erro
-       return res.status(400).json({
-           mensagem: "Erro: Nenhum usuário encontrado!"
-       });
-   }
+  if (countPets !== 0) {
+    lastPage = Math.ceil(countPets / limit);
+  } else {
+    return res.status(400).json({
+      mensagem: "Erro: Nenhum usuário encontrado!"
+    });
+  }
 
-   //console.log((page * limit) - limit); // 3 * 10 - 10 = 20
-   // Recuperar todos os usuário do banco de dados
-   const pets = await Pet.findAll({
+  const pets = await Pet.findAll({
 
-       // Indicar quais colunas recuperar
-       attributes: ['id', 'nome', 'tipo', 'porte', 'dataNasc'],
+    attributes: ['id', 'nome', 'tipo', 'porte', 'dataNasc'],
 
-       // Ordenar os registros pela coluna id na forma decrescente
-       order: [['id', 'ASC']],
+    order: [['id', 'ASC']],
 
-       // Calcular a partir de qual registro deve retornar e o limite de registros
-       offset: Number((page * limit) - limit),
-       limit: limit
-   });
+    offset: Number((page * limit) - limit),
+    limit: limit
+  });
 
-   // Acessa o IF se encontrar o registro no banco de dados
-   if (pets) {
-       // Criar objeto com as informações para paginação
-       var pagination = {
-           // Caminho
-           path: '/pets',
-           // Página atual
-           page,
-           // URL da página anterior
-           prev_page_url: page - 1 >= 1 ? page - 1 : false,
-           // URL da próxima página
-           next_page_url: Number(page) + Number(1) > lastPage ? false : Number(page) + Number(1),
-           // Última página
-           lastPage,
-           // Quantidade de registros
-           total: countPets
-       }
+  if (pets) {
+    let pagination = {
+      path: '/pets',
+      page,
+      prev_page_url: page - 1 >= 1 ? page - 1 : false,
+      next_page_url: Number(page) + Number(1) > lastPage ? false : Number(page) + Number(1),
+      lastPage,
+      total: countPets
+    }
 
-       // Pausar o processamento e retornar os dados em formato de objeto
-       return res.json({
-           pets,
-           pagination
-       });
-   } else {
-       // Pausar o processamento e retornar a mensagem de erro
-       return res.status(400).json({
-           mensagem: "Erro: Nenhum usuário encontrado!"
-       });
-   }
+    return res.json({
+      pets,
+      pagination
+    });
+  } else {
+    return res.status(400).json({
+      mensagem: "Erro: Nenhum usuário encontrado!"
+    });
+  }
 });
 
 router.get("/pets/:id", async (req, res) => {
