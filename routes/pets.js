@@ -7,8 +7,51 @@ const { Router } = require("express");
 const router = Router();
 
 router.get("/pets", async (req, res) => {
-  const listaPets = await Pet.findAll();
-  res.json(listaPets);
+  const { page = 1 } = req.query;
+
+  const limit = 5;
+
+  let lastPage = 1;
+
+  const countPets = await Pet.count();
+
+  if (countPets !== 0) {
+    lastPage = Math.ceil(countPets / limit);
+  } else {
+    return res.status(400).json({
+      mensagem: "Erro: Nenhum usuário encontrado!"
+    });
+  }
+
+  const pets = await Pet.findAll({
+
+    attributes: ['id', 'nome', 'tipo', 'porte', 'dataNasc'],
+
+    order: [['id', 'ASC']],
+
+    offset: Number((page * limit) - limit),
+    limit: limit
+  });
+
+  if (pets) {
+    let pagination = {
+      path: '/pets',
+      page,
+      prev_page_url: page - 1 >= 1 ? page - 1 : false,
+      next_page_url: Number(page) + Number(1) > lastPage ? false : Number(page) + Number(1),
+      lastPage,
+      total: countPets
+    }
+
+    return res.json({
+      pets,
+      pagination
+    });
+  } else {
+    return res.status(400).json({
+      mensagem: "Erro: Nenhum usuário encontrado!"
+    });
+  }
 });
 
 router.get("/pets/:id", async (req, res) => {
