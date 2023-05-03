@@ -4,8 +4,6 @@ const Pet = require("../database/pet");
 const path = require('path')
 const ejs = require('ejs')
 
-
-
 const { Router } = require("express");
 
 // Criar o grupo de rotas (/clientes)
@@ -74,7 +72,7 @@ router.get("/clientes/:clienteId/endereco", async (req, res) => {
 });
 
 
-router.post("/clientes", async (req, res) => {
+router.post("/clientes", async (req, res, next) => {
   // Coletar os dados do req.body
   const { nome, email, telefone, endereco } = req.body;
 
@@ -87,13 +85,13 @@ router.post("/clientes", async (req, res) => {
 
     res.status(201).json(novo);
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ message: "Um erro aconteceu." });
+    console.error(err)
+    next(err)
   }
 });
 
 // atualizar um cliente
-router.put("/clientes/:id", async (req, res) => {
+router.put("/clientes/:id", async (req, res, next) => {
   // obter dados do corpo da requisão
   const { nome, email, telefone, endereco } = req.body;
   // obter identificação do cliente pelos parametros da rota
@@ -115,12 +113,12 @@ router.put("/clientes/:id", async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Um erro aconteceu." });
+    next(err)
   }
 });
 
 // excluir um cliente
-router.delete("/clientes/:id", async (req, res) => {
+router.delete("/clientes/:id", async (req, res, next) => {
   // obter identificação do cliente pela rota
   const { id } = req.params;
   // buscar cliente por id
@@ -134,7 +132,7 @@ router.delete("/clientes/:id", async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Um erro aconteceu." });
+    next(err)
   }
 });
 

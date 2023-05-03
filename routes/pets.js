@@ -22,7 +22,7 @@ router.get("/pets/:id", async (req, res) => {
   }
 });
 
-router.post("/pets", async (req, res) => {
+router.post("/pets", async (req, res, next) => {
   const { nome, tipo, porte, dataNasc, clienteId } = req.body;
 
   try {
@@ -35,11 +35,11 @@ router.post("/pets", async (req, res) => {
     }
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "Um erro aconteceu." });
+    next(err)
   }
 });
 
-router.put("/pets/:id", async (req, res) => {
+router.put("/pets/:id", async (req, res, next) => {
   // Esses são os dados que virão no corpo JSON
   const { nome, tipo, dataNasc, porte } = req.body;
 
@@ -63,13 +63,12 @@ router.put("/pets/:id", async (req, res) => {
       res.status(404).json({ message: "O pet não foi encontrado." });
     }
   } catch (err) {
-    // caso algum erro inesperado, a resposta ao cliente será essa
     console.log(err);
-    res.status(500).json({ message: "Um erro aconteceu." });
+    next(err)
   }
 });
 
-router.delete("/pets/:id", async (req, res) => {
+router.delete("/pets/:id", async (req, res, next) => {
   // Precisamos checar se o pet existe antes de apagar
   const pet = await Pet.findByPk(req.params.id);
 
@@ -83,7 +82,7 @@ router.delete("/pets/:id", async (req, res) => {
     }
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "Um erro aconteceu." });
+    next(err)
   }
 });
 
