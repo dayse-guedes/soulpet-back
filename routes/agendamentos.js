@@ -21,6 +21,32 @@ router.get('/agendamentos', async (req, res, next) => {
   }
 });
 
+router.delete("/agendamentos/all", async (req, res, next) => {
+  try {
+    await Agendamento.destroy({ where: {} });
+    res.status(200).json({ message: "Todos os agendamentos foram removidos." });
+  } catch (err) {
+    console.error(err);
+    next(err)
+  }
+});
+
+router.delete("/agendamentos/:id", async (req, res, next) => {
+  const { id } = req.params;
+  const agendamento = await Agendamento.findOne({ where: { id } });
+  try {
+    if (Agendamento) {
+      await agendamento.destroy();
+      res.status(200).json({ message: "Agendamento removido." });
+    } else {
+      res.status(404).json({ message: "Agendamento não encontrado." });
+    }
+  } catch (err) {
+    console.error(err);
+    next(err)
+  }
+});
+
 router.post("/agendamentos", async (req, res, next) => {
   try {
     const { petId, servicoId, dataAgendada} = req.body;
