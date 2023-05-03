@@ -6,7 +6,7 @@ const Servico = require("../database/servico");
 const { Router } = require("express");
 const router = Router();
 
-router.get('/agendamentos', async (req, res) => {
+router.get('/agendamentos', async (req, res, next) => {
   try {
     const agendamentos = await Agendamento.findAll({
       include: [
@@ -15,13 +15,13 @@ router.get('/agendamentos', async (req, res) => {
       ],
     });
     res.status(200).json(agendamentos);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Erro ao consultar agendamentos' });
+  } catch (err) {
+    console.error(err);
+    next(err)
   }
 });
 
-router.post("/agendamentos", async (req, res) => {
+router.post("/agendamentos", async (req, res, next) => {
   try {
     const { petId, servicoId, dataAgendada} = req.body;
 
@@ -39,9 +39,9 @@ router.post("/agendamentos", async (req, res) => {
     });
 
     res.status(201).json(agendamento);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Erro ao criar agendamento");
+  } catch (err) {
+    console.error(err);
+    next(err)
   }
 });
 

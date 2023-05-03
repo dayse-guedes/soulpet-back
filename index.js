@@ -48,6 +48,7 @@ const rotasClientes = require("./routes/clientes");
 const rotasPets = require("./routes/pets");
 const rotasServicos = require("./routes/servicos");
 const rotasAgendamentos = require("./routes/agendamentos");
+const errorHandler = require("./model/error-handler");
 const rotasProdutos = require("./routes/produtos");
 const rotasPedidos = require("./routes/pedidos");
 
@@ -59,6 +60,8 @@ app.use(rotasServicos);
 app.use(rotasAgendamentos);
 app.use(rotasPedidos);
 app.use(rotasProdutos);
+
+app.use(errorHandler);
 
 const dbForce = process.env.DB_FORCE
 if (dbForce == "true") {

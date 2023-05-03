@@ -4,18 +4,18 @@ const Produto = require("../database/produto");
 const router = Router();
 
 // Realiza a Busca de todos 
-router.get("/produtos", async (req, res) => {
+router.get("/produtos", async (req, res, next) => {
   try {
       const listaProdutos = await Produto.findAll();
       res.status(201).json(listaProdutos);
   } catch (err) {
       console.log(err);
-      res.status(500).json({ message: "Um erro aconteceu." });
-  }
+      next(err)
+    }
 });
 
 //Realiza a Busca por nome ou categoria
-router.get("/produto", async (req, res) => {
+router.get("/produto", async (req, res, next) => {
 
   const { nome, categoria } = req.query;
   const where = nome ? { nome: { [Op.like]: `%${nome}%` } } : { categoria: { [Op.like]: `%${categoria}%` } };
@@ -31,12 +31,12 @@ router.get("/produto", async (req, res) => {
 
   } catch (err) {
       console.log(err);
-      res.status(500).json({ message: "Um erro aconteceu." });
-  };
+      next(err)
+    };
 });
 
 //lista por id
-router.get("/produtos/:id", async (req, res) => {
+router.get("/produtos/:id", async (req, res, next) => {
 
   const produto = await Produto.findOne({
       where: { id: req.params.id }
@@ -48,12 +48,13 @@ router.get("/produtos/:id", async (req, res) => {
       } else {
           res.status(404).json({ message: "Produto não encontrado." });
       }
-  } catch (error) {
-      res.status(500).json({ message: "Um erro aconteceu." });
-  }
+  } catch (err) {
+    console.error(err)  
+    next(err)
+    }
 });
 
-router.post("/produtos", async (req, res) => {
+router.post("/produtos", async (req, res, next) => {
   const { nome, preco, descricao, desconto, dataDesconto, categoria } = req.body;
 
   if (
@@ -93,12 +94,12 @@ router.post("/produtos", async (req, res) => {
     });
     res.status(201).json(produto);
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ message: "Um erro aconteceu." });
+    console.error(err);
+    next(err)
   }
 });
 
-router.put("/produtos/:id", async (req, res) => {
+router.put("/produtos/:id", async (req, res, next) => {
   const { id } = req.params;
   const { nome, preco, descricao, desconto, dataDesconto, categoria } = req.body;
 
@@ -139,22 +140,23 @@ router.put("/produtos/:id", async (req, res) => {
     res.status(201).json(produtoAtualizado);
     
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ message: "Um erro aconteceu." });
+    console.error(err);
+    next(err)
   }
 });
 
-router.delete("/produtos/all", async (req, res) => {
+router.delete("/produtos/all", async (req, res, next) => {
   try {
     await Produto.destroy({ where: {} });
     res.status(200).json({ message: "Todos os produtos foram removidos." });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Ocorreu um erro." });
+    next(err)
   }
 });
 
-router.delete("/produtos/:id", async (req, res) => {
+router.delete("/produtos/:id", async (req, res, next) => {
 
   const { id } = req.params;
 
@@ -168,7 +170,7 @@ router.delete("/produtos/:id", async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Ocorreu um erro." });
+    next(err)
   }
 });
 
