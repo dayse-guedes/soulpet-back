@@ -7,7 +7,9 @@ const { Router } = require("express");
 const router = Router();
 
 router.get("/pets", async (req, res) => {
-  const { page = 1 } = req.query;
+  const { page } = req.query;
+
+  if(page){
 
   const limit = 5;
 
@@ -52,6 +54,16 @@ router.get("/pets", async (req, res) => {
       mensagem: "Erro: Nenhum usuário encontrado!"
     });
   }
+}else{
+  try {
+    const listaPets = await Pet.findAll();
+    res.status(201).json(listaPets);
+} catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Um erro aconteceu." });
+}
+
+}
 });
 
 router.get("/pets/:id", async (req, res) => {
@@ -65,7 +77,7 @@ router.get("/pets/:id", async (req, res) => {
   }
 });
 
-router.post("/pets", async (req, res, next) => {
+router.post("/pets", async (req, res) => {
   const { nome, tipo, porte, dataNasc, clienteId } = req.body;
 
   try {
@@ -78,11 +90,11 @@ router.post("/pets", async (req, res, next) => {
     }
   } catch (err) {
     console.log(err);
-    next(err)
+    res.status(500).json({ message: "Um erro aconteceu." });
   }
 });
 
-router.put("/pets/:id", async (req, res, next) => {
+router.put("/pets/:id", async (req, res) => {
   // Esses são os dados que virão no corpo JSON
   const { nome, tipo, dataNasc, porte } = req.body;
 
@@ -106,12 +118,13 @@ router.put("/pets/:id", async (req, res, next) => {
       res.status(404).json({ message: "O pet não foi encontrado." });
     }
   } catch (err) {
+    // caso algum erro inesperado, a resposta ao cliente será essa
     console.log(err);
-    next(err)
+    res.status(500).json({ message: "Um erro aconteceu." });
   }
 });
 
-router.delete("/pets/:id", async (req, res, next) => {
+router.delete("/pets/:id", async (req, res) => {
   // Precisamos checar se o pet existe antes de apagar
   const pet = await Pet.findByPk(req.params.id);
 
@@ -125,7 +138,7 @@ router.delete("/pets/:id", async (req, res, next) => {
     }
   } catch (err) {
     console.log(err);
-    next(err)
+    res.status(500).json({ message: "Um erro aconteceu." });
   }
 });
 
