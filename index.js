@@ -50,6 +50,7 @@ const rotasAgendamentos = require("./routes/agendamentos");
 const errorHandler = require("./model/error-handler");
 const rotasProdutos = require("./routes/produtos");
 const rotasPedidos = require("./routes/pedidos");
+const rotasDashboard = require("./routes/Dashboard");
 
 // Juntar ao app as rotas dos arquivos
 app.use(rotasClientes); // Configurar o grupo de rotas no app
@@ -59,6 +60,7 @@ app.use(rotasAgendamentos);
 app.use(rotasPedidos);
 app.use(rotasProdutos);
 app.use(errorHandler);
+app.use(rotasDashboard);
 
 (async () => {
   try {
