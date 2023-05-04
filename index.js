@@ -50,9 +50,6 @@ const rotasAgendamentos = require("./routes/agendamentos");
 const errorHandler = require("./model/error-handler");
 const rotasProdutos = require("./routes/produtos");
 const rotasPedidos = require("./routes/pedidos");
-const rotasProdutos = require("./routes/produtos");
-const errorHandler = require("./model/error-handler");
-
 
 // Juntar ao app as rotas dos arquivos
 app.use(rotasClientes); // Configurar o grupo de rotas no app
@@ -65,8 +62,8 @@ app.use(errorHandler);
 
 (async () => {
   try {
-    const dbForce = process.env.DB_FORCE;
-    if (dbForce == "true") {
+    const dbForce = process.env.DB_FORCE === "true";
+    if (dbForce) {
       connection
         .sync({ force: true })
         .then(async () => {
@@ -198,6 +195,7 @@ app.use(errorHandler);
               servicoId: 2,
             },
           ]);
+          await createTrigger();
         })
         .catch((err) => {
           console.error("Erro ao sincronizar banco de dados", err);
@@ -205,7 +203,7 @@ app.use(errorHandler);
     } else {
       connection.sync();
     }
-    await createTrigger();
+
     app.listen(3001, () => {
       console.log("Servidor rodando em http://localhost:3001/");
     });
