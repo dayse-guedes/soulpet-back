@@ -29,29 +29,30 @@ const createTrigger = require("./database/triggers");
 
 // Configuração de conexão com o MongoDB
 mongoose.connect(process.env.db_url);
-app.use(
-  morgan("combined", {
-    stream: {
-      write: async function (log) {
-        try {
-          const novoLog = new LogMorgan({ log });
-          await novoLog.save();
-        } catch (err) {
-          console.log(err);
-        }
-      },
-    },
-  })
-);
+app.use(morgan('combined', {
+  stream: {
+    write: async function (log) {
+      try {
+        const novoLog = new LogMorgan({ log });
+        await novoLog.save();
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  }
+}));
 
 // Definição de Rotas
 const rotasClientes = require("./routes/clientes");
 const rotasPets = require("./routes/pets");
 const rotasServicos = require("./routes/servicos");
 const rotasAgendamentos = require("./routes/agendamentos");
+const errorHandler = require("./model/error-handler");
+const rotasProdutos = require("./routes/produtos");
 const rotasPedidos = require("./routes/pedidos");
 const rotasProdutos = require("./routes/produtos");
 const errorHandler = require("./model/error-handler");
+
 
 // Juntar ao app as rotas dos arquivos
 app.use(rotasClientes); // Configurar o grupo de rotas no app
@@ -212,3 +213,4 @@ app.use(errorHandler);
     console.error("Erro ao criar trigger e iniciar o servidor:", err);
   }
 })();
+

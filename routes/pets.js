@@ -7,7 +7,9 @@ const { Router } = require("express");
 const router = Router();
 
 router.get("/pets", async (req, res) => {
-  const { page = 1 } = req.query;
+  const { page } = req.query;
+
+  if(page){
 
   const limit = 5;
 
@@ -52,6 +54,16 @@ router.get("/pets", async (req, res) => {
       mensagem: "Erro: Nenhum usuário encontrado!"
     });
   }
+}else{
+  try {
+    const listaPets = await Pet.findAll();
+    res.status(201).json(listaPets);
+} catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Um erro aconteceu." });
+}
+
+}
 });
 
 router.get("/pets/:id", async (req, res) => {

@@ -1,5 +1,6 @@
 const { Router } = require("express");
 const Servico = require("../database/servico");
+const Agendamento = require("../database/agendamento");
 
 // Criar o grupo de rotas (/clientes)
 const router = Router();
@@ -22,7 +23,7 @@ router.get("/servicos/:id", async (req, res) => {
     }
 });
 
-router.post("/servicos", async (req, res) => {
+router.post("/servicos", async (req, res, next) => {
 
     const { nome, preco } = req.body;
 
@@ -34,22 +35,12 @@ router.post("/servicos", async (req, res) => {
             res.json({ message: "Nome ou preco invalido" });
         }
     } catch (err) {
-        console.log(err);
-        res.status(500).json({ message: "Um erro aconteceu." });
-    }
-});
-
-router.delete("/servicos/all", async (req, res) => {
-    try {
-        await Servico.destroy({ where: {} });
-        res.status(200).json({ message: "Todos os servicos foram removidos." });
-    } catch (err) {
         console.error(err);
-        res.status(500).json({ message: "Ocorreu um erro." });
+        next(err)
     }
 });
 
-router.put("/servicos/:id", async (req, res) => {
+router.put("/servicos/:id", async (req, res, next) => {
     const { nome, preco } = req.body;
     const servico = await Servico.findByPk(req.params.id);
 
@@ -64,18 +55,28 @@ router.put("/servicos/:id", async (req, res) => {
             res.status(404).json({ message: "O serviço não foi encontrado." });
         }
     } catch (err) {
-        console.log(err);
-        res.status(500).json({ message: "Um erro aconteceu." });
+        console.error(err);
+        next(err)
+    }
+});
+router.delete("/servicos/all", async (req, res, next) => {
+    try {
+        await Agendamento.destroy({ where: {} });
+        await Servico.destroy({ where: {} });
+        res.status(200).json({ message: "Todos os servicos foram removidos." });
+    } catch (err) {
+        console.error(err);
+        next(err)
     }
 });
 
-router.delete("/servicos/:id", async (req, res) => {
+router.delete("/servicos/:id", async (req, res, next) => {
 
     const { id } = req.params;
-
     const servico = await Servico.findOne({ where: { id } });
     try {
         if (servico) {
+            await Agendamento.destroy({ where: {servicoId: id} });
             await servico.destroy();
             res.status(200).json({ message: "O Servico foi removido." });
         } else {
@@ -83,7 +84,7 @@ router.delete("/servicos/:id", async (req, res) => {
         }
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: "Ocorreu um erro." });
+        next(err)
     }
 });
 
