@@ -21,6 +21,23 @@ router.get('/agendamentos', async (req, res, next) => {
   }
 });
 
+router.get('/agendamentos/:id', async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const agendamentos = await Agendamento.findOne({
+      include: [
+        { model: Pet, as: 'pet', attributes: ['nome'] },
+        { model: Servico, as: 'servico', attributes: ['nome'] },
+      ],
+      where: { id }
+    });
+    res.status(200).json(agendamentos);
+  } catch (err) {
+    console.error(err);
+    next(err)
+  }
+});
+
 router.delete("/agendamentos/all", async (req, res, next) => {
   try {
     await Agendamento.destroy({ where: {} });
@@ -74,9 +91,8 @@ router.post("/agendamentos", async (req, res, next) => {
 router.put("/agendamentos/:id", async (req, res, next) => {
   const { petId, servicoId, dataAgendada, realizada } = req.body;
   const { id } = req.params;
-  console.log(req.params)
 
-  if (!id || !petId || !servicoId || !dataAgendada || !realizada) {
+  if (!id || !petId || !servicoId || !dataAgendada || typeof realizada === "undefined") {
     return res.status(404).json({ message: "Campos obrigatórios não informados." });
   }
 
@@ -86,13 +102,13 @@ router.put("/agendamentos/:id", async (req, res, next) => {
     const servico = await Servico.findByPk(servicoId);
 
     if (!agendamento) {
-      return res.status(404).json({ message: "Agendamento não encontrado"})
+      return res.status(404).json({ message: "Agendamento não encontrado" })
     }
     if (!pet) {
-      return res.status(404).json({ message: "Pet não encontrado"})
+      return res.status(404).json({ message: "Pet não encontrado" })
     }
     if (!servico) {
-      return res.status(404).json({ message: "Serviço não encontrado"})
+      return res.status(404).json({ message: "Serviço não encontrado" })
     }
 
     const response = await agendamento.update({
