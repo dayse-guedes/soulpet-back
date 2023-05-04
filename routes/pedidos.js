@@ -14,6 +14,7 @@ router.get("/pedidos", async (req, res, next) => {
         { model: Cliente, as: 'cliente', attributes: ['nome'] },
         { model: Produto, as: 'produto', attributes: ['nome'] },
       ],
+      order: [['updatedAt', 'DESC']],
     });
     res.status(200).json(response);
   } catch (err) {
