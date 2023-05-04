@@ -7,13 +7,12 @@ const Produto = require("../database/produto");
 const router = Router();
 
 router.post("/pedidos", async (req, res, next) => {
-  const { quantidade, clienteId, produtoId } = req.body;
+  const { pedidos } = req.body;
+  console.log(pedidos);
   try {
-    if (quantidade && clienteId && produtoId) {
+    if (pedidos) {
 
-      const novo = await Pedido.create(
-        { quantidade, clienteId, produtoId }
-      );
+      const novo = await Pedido.bulkCreate(pedidos);
 
       res.status(201).json(novo);
 
