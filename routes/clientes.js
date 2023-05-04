@@ -127,6 +127,8 @@ router.delete("/clientes/:id", async (req, res) => {
   const cliente = await Cliente.findOne({ where: { id } });
   try {
     if (cliente) {
+      await Pet.destroy({where: {clienteId:id}});
+      await Endereco.destroy({where: {clienteId:id}});
       await cliente.destroy();
       res.status(200).json({ message: "Cliente removido." });
     } else {
@@ -137,5 +139,6 @@ router.delete("/clientes/:id", async (req, res) => {
     res.status(500).json({ message: "Um erro aconteceu." });
   }
 });
+
 
 module.exports = router;

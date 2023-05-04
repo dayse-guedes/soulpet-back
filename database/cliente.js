@@ -31,7 +31,7 @@ const Endereco = require("./endereco");
 // Cliente tem um Endereço
 // Endereço ganha uma chave estrangeira (nome do model + Id)
 // Chave estrangeira = clienteId
-Cliente.hasOne(Endereco, { onDelete: "CASCADE" });
+Cliente.hasOne(Endereco);
 // CASCADE = apagar o cliente, faz o endereço associado ser apagado junto
 Endereco.belongsTo(Cliente); // Endereço pertence a um Cliente
 
